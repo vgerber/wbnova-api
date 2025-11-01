@@ -1,0 +1,11 @@
+use serde::Serialize;
+
+use serde::Deserialize;
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+
+pub struct Pose {
+    pub position: Option<Vec<f64>>,
+
+    pub orientation: Option<Vec<f64>>,
+}
