@@ -13,12 +13,12 @@ async fn test_basic_motion_data() {
 
     let mut stream = match stream_motion_group_state(
         &format!("wss://{}/api/v2", instance_uri.host().unwrap()),
-        &StreamMotionGroupStatePathParameters {
+        StreamMotionGroupStatePathParameters {
             motion_group: env::var("MOTION_GROUP").unwrap(),
             cell: env::var("CELL").unwrap(),
             controller: env::var("CONTROLLER").unwrap(),
         },
-        &StreamMotionGroupStateQueryParameters {
+        StreamMotionGroupStateQueryParameters {
             response_coordinate_system: None,
             response_rate: None,
         },
