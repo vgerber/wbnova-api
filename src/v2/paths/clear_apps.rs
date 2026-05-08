@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum ClearAppsResponseType {
-    UndefinedResponse(reqwest::Response),
-
     NotFound(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct ClearAppsPathParameters {

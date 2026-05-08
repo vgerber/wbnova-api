@@ -7,7 +7,7 @@ use serde::Deserialize;
 pub struct BusIoModbusTcpClient {
     pub ip: String,
 
-    pub network_type: Option<String>,
-
     pub port: i32,
+
+    pub network_type: Option<String>,
 }

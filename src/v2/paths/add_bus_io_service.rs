@@ -7,9 +7,9 @@ use crate::v2::objects::bus_io_type::BusIoType;
 pub enum AddBusIoServiceResponseType {
     NotFound(Error),
 
-    UndefinedResponse(reqwest::Response),
-
     Forbidden(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct AddBusIoServicePathParameters {
@@ -52,13 +52,13 @@ pub async fn add_bus_io_service(
     };
 
     match response.status().as_u16() {
-        403 => match response.json::<Error>().await {
-            Ok(error) => Ok(AddBusIoServiceResponseType::Forbidden(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddBusIoServiceResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(AddBusIoServiceResponseType::NotFound(error)),
+        403 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddBusIoServiceResponseType::Forbidden(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

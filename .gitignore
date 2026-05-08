@@ -2,3 +2,4 @@
 public.openapi.yaml
 generate.log
 .env.test
+output.log

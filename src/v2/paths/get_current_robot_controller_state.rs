@@ -1,23 +1,23 @@
 use ::reqwest;
 
-use crate::v2::objects::robot_controller_state::RobotControllerState;
-
 use crate::v2::objects::error::Error;
 
+use crate::v2::objects::robot_controller_state::RobotControllerState;
+
 pub enum GetCurrentRobotControllerStateResponseType {
-    UndefinedResponse(reqwest::Response),
+    BadRequest(Error),
 
     NotFound(Error),
 
-    BadRequest(Error),
+    UndefinedResponse(reqwest::Response),
 
     Ok(RobotControllerState),
 }
 
 pub struct GetCurrentRobotControllerStatePathParameters {
-    pub controller: String,
-
     pub cell: String,
+
+    pub controller: String,
 }
 
 pub struct GetCurrentRobotControllerStateQueryParameters {}
@@ -42,16 +42,16 @@ pub async fn get_current_robot_controller_state(
     };
 
     match response.status().as_u16() {
-        200 => match response.json::<RobotControllerState>().await {
-            Ok(robot_controller_state) => Ok(GetCurrentRobotControllerStateResponseType::Ok(
-                robot_controller_state,
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetCurrentRobotControllerStateResponseType::BadRequest(
+                error,
             )),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetCurrentRobotControllerStateResponseType::BadRequest(
-                error,
+        200 => match response.json::<RobotControllerState>().await {
+            Ok(robot_controller_state) => Ok(GetCurrentRobotControllerStateResponseType::Ok(
+                robot_controller_state,
             )),
             Err(parsing_error) => Err(parsing_error),
         },

@@ -1,9 +1,9 @@
 use ::reqwest;
 
 pub enum ListStoredCollidersKeysResponseType {
-    UndefinedResponse(reqwest::Response),
-
     Ok(Vec<String>),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct ListStoredCollidersKeysPathParameters {

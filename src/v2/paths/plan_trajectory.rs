@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::plan_trajectory_response::PlanTrajectoryResponse;
-
 use crate::v2::objects::plan_422_response::Plan422Response;
+
+use crate::v2::objects::plan_trajectory_response::PlanTrajectoryResponse;
 
 use crate::v2::objects::plan_trajectory_request::PlanTrajectoryRequest;
 
 pub enum PlanTrajectoryResponseType {
-    UndefinedResponse(reqwest::Response),
+    Ok(PlanTrajectoryResponse),
 
     UnprocessableEntity(Plan422Response),
 
-    Ok(PlanTrajectoryResponse),
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct PlanTrajectoryPathParameters {
@@ -43,17 +43,17 @@ pub async fn plan_trajectory(
     };
 
     match response.status().as_u16() {
-        200 => match response.json::<PlanTrajectoryResponse>().await {
-            Ok(plan_trajectory_response) => {
-                Ok(PlanTrajectoryResponseType::Ok(plan_trajectory_response))
-            }
-            Err(parsing_error) => Err(parsing_error),
-        },
-
         422 => match response.json::<Plan422Response>().await {
             Ok(plan_422_response) => Ok(PlanTrajectoryResponseType::UnprocessableEntity(
                 plan_422_response,
             )),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        200 => match response.json::<PlanTrajectoryResponse>().await {
+            Ok(plan_trajectory_response) => {
+                Ok(PlanTrajectoryResponseType::Ok(plan_trajectory_response))
+            }
             Err(parsing_error) => Err(parsing_error),
         },
 

@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::service_status_list::ServiceStatusList;
 
 pub enum GetSystemStatusResponseType {
-    Ok(ServiceStatusList),
-
     UndefinedResponse(reqwest::Response),
+
+    Ok(ServiceStatusList),
 }
 
 pub struct GetSystemStatusPathParameters {}

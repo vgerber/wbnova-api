@@ -8,4 +8,6 @@ use serde::Deserialize;
 
 pub struct JointLimitExceededError {
     pub joint_limit_exceeded: Option<FeedbackJointLimitExceeded>,
+
+    pub kind: String,
 }

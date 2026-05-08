@@ -5,21 +5,21 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::motion_group_state::MotionGroupState;
 
 pub enum GetCurrentMotionGroupStateResponseType {
-    NotFound(Error),
-
-    UndefinedResponse(reqwest::Response),
-
     Ok(MotionGroupState),
 
     BadRequest(Error),
+
+    UndefinedResponse(reqwest::Response),
+
+    NotFound(Error),
 }
 
 pub struct GetCurrentMotionGroupStatePathParameters {
-    pub controller: String,
+    pub motion_group: String,
 
     pub cell: String,
 
-    pub motion_group: String,
+    pub controller: String,
 }
 
 pub struct GetCurrentMotionGroupStateQueryParameters {

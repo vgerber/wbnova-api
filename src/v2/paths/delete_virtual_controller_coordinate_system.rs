@@ -3,19 +3,19 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum DeleteVirtualControllerCoordinateSystemResponseType {
+    BadRequest(Error),
+
     UndefinedResponse(reqwest::Response),
 
     NotFound(Error),
-
-    BadRequest(Error),
 }
 
 pub struct DeleteVirtualControllerCoordinateSystemPathParameters {
-    pub controller: String,
+    pub coordinate_system: String,
 
     pub cell: String,
 
-    pub coordinate_system: String,
+    pub controller: String,
 }
 
 pub struct DeleteVirtualControllerCoordinateSystemQueryParameters {
@@ -57,13 +57,13 @@ pub async fn delete_virtual_controller_coordinate_system(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(DeleteVirtualControllerCoordinateSystemResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteVirtualControllerCoordinateSystemResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(DeleteVirtualControllerCoordinateSystemResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteVirtualControllerCoordinateSystemResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

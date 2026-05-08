@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::inverse_kinematics_422_response::InverseKinematics422Response;
-
 use crate::v2::objects::inverse_kinematics_response::InverseKinematicsResponse;
+
+use crate::v2::objects::inverse_kinematics_422_response::InverseKinematics422Response;
 
 use crate::v2::objects::inverse_kinematics_request::InverseKinematicsRequest;
 
 pub enum InverseKinematicsResponseType {
-    Ok(InverseKinematicsResponse),
+    UndefinedResponse(reqwest::Response),
 
     UnprocessableEntity(InverseKinematics422Response),
 
-    UndefinedResponse(reqwest::Response),
+    Ok(InverseKinematicsResponse),
 }
 
 pub struct InverseKinematicsPathParameters {
@@ -43,17 +43,17 @@ pub async fn inverse_kinematics(
     };
 
     match response.status().as_u16() {
-        422 => match response.json::<InverseKinematics422Response>().await {
-            Ok(inverse_kinematics_422_response) => Ok(
-                InverseKinematicsResponseType::UnprocessableEntity(inverse_kinematics_422_response),
-            ),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
         200 => match response.json::<InverseKinematicsResponse>().await {
             Ok(inverse_kinematics_response) => Ok(InverseKinematicsResponseType::Ok(
                 inverse_kinematics_response,
             )),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        422 => match response.json::<InverseKinematics422Response>().await {
+            Ok(inverse_kinematics_422_response) => Ok(
+                InverseKinematicsResponseType::UnprocessableEntity(inverse_kinematics_422_response),
+            ),
             Err(parsing_error) => Err(parsing_error),
         },
 

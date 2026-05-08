@@ -10,6 +10,8 @@ pub enum GetCycleTimeResponseType {
     BadRequest(Error),
 
     Ok(CycleTime),
+
+    NotFound(Error),
 }
 
 pub struct GetCycleTimePathParameters {
@@ -40,13 +42,18 @@ pub async fn get_cycle_time(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetCycleTimeResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetCycleTimeResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
         200 => match response.json::<CycleTime>().await {
             Ok(cycle_time) => Ok(GetCycleTimeResponseType::Ok(cycle_time)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetCycleTimeResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

@@ -5,9 +5,9 @@ pub enum StopProgramResponseType {
 }
 
 pub struct StopProgramPathParameters {
-    pub program: String,
-
     pub cell: String,
+
+    pub program: String,
 }
 
 pub struct StopProgramQueryParameters {}

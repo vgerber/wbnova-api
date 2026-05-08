@@ -7,9 +7,9 @@ use crate::v2::objects::error::Error;
 pub enum GetAppResponseType {
     UndefinedResponse(reqwest::Response),
 
-    NotFound(Error),
-
     Ok(App),
+
+    NotFound(Error),
 }
 
 pub struct GetAppPathParameters {

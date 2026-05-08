@@ -10,6 +10,8 @@ pub enum ListModbusIOsResponseType {
     Ok(ModbusIOs),
 
     UndefinedResponse(reqwest::Response),
+
+    PreconditionFailed(Error),
 }
 
 pub struct ListModbusIOsPathParameters {
@@ -38,13 +40,18 @@ pub async fn list_modbus_i_os(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(ListModbusIOsResponseType::NotFound(error)),
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListModbusIOsResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
         200 => match response.json::<ModbusIOs>().await {
             Ok(modbus_i_os) => Ok(ListModbusIOsResponseType::Ok(modbus_i_os)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListModbusIOsResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

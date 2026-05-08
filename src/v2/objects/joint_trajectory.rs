@@ -7,7 +7,7 @@ use serde::Deserialize;
 pub struct JointTrajectory {
     pub locations: Vec<f64>,
 
-    pub joint_positions: Vec<Vec<f64>>,
-
     pub times: Vec<f64>,
+
+    pub joint_positions: Vec<Vec<f64>>,
 }

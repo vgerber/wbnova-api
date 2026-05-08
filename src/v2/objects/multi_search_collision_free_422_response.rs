@@ -4,8 +4,6 @@ use serde::Deserialize;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
-pub struct PositionBlending {
-    pub blending_name: String,
-
-    pub position_zone_radius: Option<f64>,
+pub struct MultiSearchCollisionFree422Response {
+    pub detail: Option<Vec<String>>,
 }

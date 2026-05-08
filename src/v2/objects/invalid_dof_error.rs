@@ -7,5 +7,7 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct InvalidDofError {
+    pub kind: String,
+
     pub invalid_dof: Option<Object>,
 }

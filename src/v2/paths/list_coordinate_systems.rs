@@ -1,21 +1,21 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::list_coordinate_systems_response::ListCoordinateSystemsResponse;
 
+use crate::v2::objects::error::Error;
+
 pub enum ListCoordinateSystemsResponseType {
-    BadRequest(Error),
+    UndefinedResponse(reqwest::Response),
 
     Ok(ListCoordinateSystemsResponse),
 
-    UndefinedResponse(reqwest::Response),
+    BadRequest(Error),
 }
 
 pub struct ListCoordinateSystemsPathParameters {
-    pub controller: String,
-
     pub cell: String,
+
+    pub controller: String,
 }
 
 pub struct ListCoordinateSystemsQueryParameters {
@@ -54,15 +54,15 @@ pub async fn list_coordinate_systems(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(ListCoordinateSystemsResponseType::BadRequest(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
         200 => match response.json::<ListCoordinateSystemsResponse>().await {
             Ok(list_coordinate_systems_response) => Ok(ListCoordinateSystemsResponseType::Ok(
                 list_coordinate_systems_response,
             )),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListCoordinateSystemsResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

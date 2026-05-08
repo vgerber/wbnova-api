@@ -1,9 +1,9 @@
 use ::reqwest;
 
 pub enum ListCollisionLinkChainsKeysResponseType {
-    Ok(Vec<String>),
-
     UndefinedResponse(reqwest::Response),
+
+    Ok(Vec<String>),
 }
 
 pub struct ListCollisionLinkChainsKeysPathParameters {

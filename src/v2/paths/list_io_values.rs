@@ -1,23 +1,23 @@
 use ::reqwest;
 
-use crate::v2::objects::list_io_values_response::ListIoValuesResponse;
-
 use crate::v2::objects::error::Error;
 
-pub enum ListIoValuesResponseType {
-    NotFound(Error),
+use crate::v2::objects::list_io_values_response::ListIoValuesResponse;
 
-    Ok(ListIoValuesResponse),
+pub enum ListIoValuesResponseType {
+    BadRequest(Error),
 
     UndefinedResponse(reqwest::Response),
 
-    BadRequest(Error),
+    NotFound(Error),
+
+    Ok(ListIoValuesResponse),
 }
 
 pub struct ListIoValuesPathParameters {
-    pub cell: String,
-
     pub controller: String,
+
+    pub cell: String,
 }
 
 pub struct ListIoValuesQueryParameters {
@@ -58,15 +58,15 @@ pub async fn list_io_values(
     };
 
     match response.status().as_u16() {
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListIoValuesResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         200 => match response.json::<ListIoValuesResponse>().await {
             Ok(list_io_values_response) => {
                 Ok(ListIoValuesResponseType::Ok(list_io_values_response))
             }
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(ListIoValuesResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

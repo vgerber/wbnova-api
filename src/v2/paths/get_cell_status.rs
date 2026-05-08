@@ -1,15 +1,15 @@
 use ::reqwest;
 
-use crate::v2::objects::service_status_response::ServiceStatusResponse;
-
 use crate::v2::objects::error::Error;
+
+use crate::v2::objects::service_status_response::ServiceStatusResponse;
 
 pub enum GetCellStatusResponseType {
     UndefinedResponse(reqwest::Response),
 
-    Ok(ServiceStatusResponse),
-
     NotFound(Error),
+
+    Ok(ServiceStatusResponse),
 }
 
 pub struct GetCellStatusPathParameters {
@@ -35,15 +35,15 @@ pub async fn get_cell_status(
     };
 
     match response.status().as_u16() {
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetCellStatusResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         200 => match response.json::<ServiceStatusResponse>().await {
             Ok(service_status_response) => {
                 Ok(GetCellStatusResponseType::Ok(service_status_response))
             }
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetCellStatusResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

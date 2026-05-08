@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::collider_dictionary::ColliderDictionary;
 
 pub enum ListStoredCollidersResponseType {
-    Ok(ColliderDictionary),
-
     UndefinedResponse(reqwest::Response),
+
+    Ok(ColliderDictionary),
 }
 
 pub struct ListStoredCollidersPathParameters {

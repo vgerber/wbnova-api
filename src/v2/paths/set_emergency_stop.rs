@@ -3,15 +3,17 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum SetEmergencyStopResponseType {
-    BadRequest(Error),
+    NotFound(Error),
 
     UndefinedResponse(reqwest::Response),
+
+    BadRequest(Error),
 }
 
 pub struct SetEmergencyStopPathParameters {
-    pub controller: String,
-
     pub cell: String,
+
+    pub controller: String,
 }
 
 pub struct SetEmergencyStopQueryParameters {
@@ -52,6 +54,11 @@ pub async fn set_emergency_stop(
     match response.status().as_u16() {
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(SetEmergencyStopResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetEmergencyStopResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

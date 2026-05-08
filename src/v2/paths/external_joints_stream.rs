@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::external_joint_stream_datapoints::ExternalJointStreamDatapoints;
-
 use crate::v2::objects::error::Error;
+
+use crate::v2::objects::external_joint_stream_datapoints::ExternalJointStreamDatapoints;
 
 use crate::v2::objects::external_joint_stream_request::ExternalJointStreamRequest;
 
 pub enum ExternalJointsStreamResponseType {
     UndefinedResponse(reqwest::Response),
 
-    Ok(ExternalJointStreamDatapoints),
-
     NotFound(Error),
+
+    Ok(ExternalJointStreamDatapoints),
 
     BadRequest(Error),
 }
@@ -47,6 +47,11 @@ pub async fn external_joints_stream(
     };
 
     match response.status().as_u16() {
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(ExternalJointsStreamResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         200 => match response.json::<ExternalJointStreamDatapoints>().await {
             Ok(external_joint_stream_datapoints) => Ok(ExternalJointsStreamResponseType::Ok(
                 external_joint_stream_datapoints,
@@ -56,11 +61,6 @@ pub async fn external_joints_stream(
 
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(ExternalJointsStreamResponseType::BadRequest(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(ExternalJointsStreamResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

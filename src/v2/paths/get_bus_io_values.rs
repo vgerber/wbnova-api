@@ -1,17 +1,19 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::list_io_values_response::ListIoValuesResponse;
+
+use crate::v2::objects::error::Error;
 
 pub enum GetBusIoValuesResponseType {
     BadRequest(Error),
 
+    UndefinedResponse(reqwest::Response),
+
     Ok(ListIoValuesResponse),
 
-    NotFound(Error),
+    PreconditionFailed(Error),
 
-    UndefinedResponse(reqwest::Response),
+    NotFound(Error),
 }
 
 pub struct GetBusIoValuesPathParameters {
@@ -56,11 +58,6 @@ pub async fn get_bus_io_values(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetBusIoValuesResponseType::NotFound(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
         200 => match response.json::<ListIoValuesResponse>().await {
             Ok(list_io_values_response) => {
                 Ok(GetBusIoValuesResponseType::Ok(list_io_values_response))
@@ -70,6 +67,16 @@ pub async fn get_bus_io_values(
 
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(GetBusIoValuesResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetBusIoValuesResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetBusIoValuesResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

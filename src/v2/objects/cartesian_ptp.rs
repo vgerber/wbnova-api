@@ -7,7 +7,7 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct CartesianPtp {
-    pub path_definition_name: String,
-
     pub target_pose: Pose,
+
+    pub path_definition_name: String,
 }

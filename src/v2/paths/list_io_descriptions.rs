@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::list_io_descriptions_response::ListIoDescriptionsResponse;
-
 use crate::v2::objects::error::Error;
 
+use crate::v2::objects::list_io_descriptions_response::ListIoDescriptionsResponse;
+
 pub enum ListIoDescriptionsResponseType {
-    UndefinedResponse(reqwest::Response),
-
-    NotFound(Error),
-
     BadRequest(Error),
 
+    UndefinedResponse(reqwest::Response),
+
     Ok(ListIoDescriptionsResponse),
+
+    NotFound(Error),
 }
 
 pub struct ListIoDescriptionsPathParameters {
@@ -23,11 +23,11 @@ pub struct ListIoDescriptionsPathParameters {
 pub struct ListIoDescriptionsQueryParameters {
     pub direction: Option<String>,
 
-    pub ios: Option<Vec<String>>,
-
     pub group: Option<String>,
 
     pub value_type: Option<String>,
+
+    pub ios: Option<Vec<String>>,
 }
 
 pub async fn list_io_descriptions(
@@ -48,18 +48,18 @@ pub async fn list_io_descriptions(
         reqwest_query_parameters.push(("direction", query_parameter.to_string()));
     }
 
-    if let Some(ref query_parameter) = query_parameters.ios {
-        query_parameter.iter().for_each(|query_parameter_item| {
-            reqwest_query_parameters.push(("ios", query_parameter_item.to_string()))
-        });
-    }
-
     if let Some(ref query_parameter) = query_parameters.group {
         reqwest_query_parameters.push(("group", query_parameter.to_string()));
     }
 
     if let Some(ref query_parameter) = query_parameters.value_type {
         reqwest_query_parameters.push(("value_type", query_parameter.to_string()));
+    }
+
+    if let Some(ref query_parameter) = query_parameters.ios {
+        query_parameter.iter().for_each(|query_parameter_item| {
+            reqwest_query_parameters.push(("ios", query_parameter_item.to_string()))
+        });
     }
 
     let response = match client
@@ -76,10 +76,8 @@ pub async fn list_io_descriptions(
     };
 
     match response.status().as_u16() {
-        200 => match response.json::<ListIoDescriptionsResponse>().await {
-            Ok(list_io_descriptions_response) => Ok(ListIoDescriptionsResponseType::Ok(
-                list_io_descriptions_response,
-            )),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListIoDescriptionsResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
@@ -88,8 +86,10 @@ pub async fn list_io_descriptions(
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(ListIoDescriptionsResponseType::NotFound(error)),
+        200 => match response.json::<ListIoDescriptionsResponse>().await {
+            Ok(list_io_descriptions_response) => Ok(ListIoDescriptionsResponseType::Ok(
+                list_io_descriptions_response,
+            )),
             Err(parsing_error) => Err(parsing_error),
         },
 

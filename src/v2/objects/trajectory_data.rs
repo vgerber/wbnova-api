@@ -7,11 +7,11 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct TrajectoryData {
-    pub data: JointTrajectory,
+    pub motion_group: Option<String>,
 
     pub tcp: Option<String>,
 
-    pub motion_group: Option<String>,
-
     pub message_type: String,
+
+    pub data: JointTrajectory,
 }

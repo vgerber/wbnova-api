@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::behavior::Behavior;
 
-pub enum GetVirtualControllerBehaviorResponseType {
-    UndefinedResponse(reqwest::Response),
+use crate::v2::objects::error::Error;
 
+pub enum GetVirtualControllerBehaviorResponseType {
     Ok(Behavior),
 
-    NotFound(Error),
-
     BadRequest(Error),
+
+    UndefinedResponse(reqwest::Response),
+
+    NotFound(Error),
 }
 
 pub struct GetVirtualControllerBehaviorPathParameters {
@@ -42,6 +42,11 @@ pub async fn get_virtual_controller_behavior(
     };
 
     match response.status().as_u16() {
+        200 => match response.json::<Behavior>().await {
+            Ok(behavior) => Ok(GetVirtualControllerBehaviorResponseType::Ok(behavior)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(GetVirtualControllerBehaviorResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
@@ -49,11 +54,6 @@ pub async fn get_virtual_controller_behavior(
 
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(GetVirtualControllerBehaviorResponseType::BadRequest(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        200 => match response.json::<Behavior>().await {
-            Ok(behavior) => Ok(GetVirtualControllerBehaviorResponseType::Ok(behavior)),
             Err(parsing_error) => Err(parsing_error),
         },
 

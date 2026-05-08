@@ -8,4 +8,6 @@ use serde::Deserialize;
 
 pub struct InconsistentTrajectorySizeError {
     pub inconsistent_trajectory_size: Option<Object>,
+
+    pub kind: String,
 }

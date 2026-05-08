@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::motion_group_infos::MotionGroupInfos;
-
 use crate::v2::objects::error::Error;
 
+use crate::v2::objects::motion_group_infos::MotionGroupInfos;
+
 pub enum GetMotionGroupsResponseType {
+    UndefinedResponse(reqwest::Response),
+
     NotFound(Error),
 
     BadRequest(Error),
 
     Ok(MotionGroupInfos),
-
-    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetMotionGroupsPathParameters {
@@ -42,6 +42,11 @@ pub async fn get_motion_groups(
     };
 
     match response.status().as_u16() {
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetMotionGroupsResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         200 => match response.json::<MotionGroupInfos>().await {
             Ok(motion_group_infos) => Ok(GetMotionGroupsResponseType::Ok(motion_group_infos)),
             Err(parsing_error) => Err(parsing_error),
@@ -49,11 +54,6 @@ pub async fn get_motion_groups(
 
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(GetMotionGroupsResponseType::NotFound(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetMotionGroupsResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

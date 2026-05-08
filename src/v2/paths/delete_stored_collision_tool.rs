@@ -5,9 +5,9 @@ pub enum DeleteStoredCollisionToolResponseType {
 }
 
 pub struct DeleteStoredCollisionToolPathParameters {
-    pub tool: String,
-
     pub cell: String,
+
+    pub tool: String,
 }
 
 pub struct DeleteStoredCollisionToolQueryParameters {}

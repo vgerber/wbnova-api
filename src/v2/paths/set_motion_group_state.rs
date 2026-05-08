@@ -5,17 +5,17 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::motion_group_joints::MotionGroupJoints;
 
 pub enum SetMotionGroupStateResponseType {
-    NotFound(Error),
+    UndefinedResponse(reqwest::Response),
 
     BadRequest(Error),
 
-    UndefinedResponse(reqwest::Response),
+    NotFound(Error),
 }
 
 pub struct SetMotionGroupStatePathParameters {
-    pub controller: String,
-
     pub motion_group: String,
+
+    pub controller: String,
 
     pub cell: String,
 }

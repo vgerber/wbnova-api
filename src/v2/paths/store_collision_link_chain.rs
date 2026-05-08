@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::link_chain::LinkChain;
 
 pub enum StoreCollisionLinkChainResponseType {
-    Ok(LinkChain),
-
     UndefinedResponse(reqwest::Response),
+
+    Ok(LinkChain),
 }
 
 pub struct StoreCollisionLinkChainPathParameters {

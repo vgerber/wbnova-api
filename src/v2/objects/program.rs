@@ -9,15 +9,15 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct Program {
+    pub description: Option<String>,
+
     pub program: String,
+
+    pub name: Option<String>,
 
     pub input_schema: Option<ProgramInputJsonSchema>,
 
     pub preconditions: Option<PreconditionsBeforeTheProgramCanBeStarted>,
 
-    pub description: Option<String>,
-
     pub app: String,
-
-    pub name: Option<String>,
 }

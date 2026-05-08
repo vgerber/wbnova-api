@@ -7,9 +7,9 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct GetTrajectoryResponse {
-    pub tcp: String,
+    pub trajectory: JointTrajectory,
 
     pub motion_group: String,
 
-    pub trajectory: JointTrajectory,
+    pub tcp: String,
 }

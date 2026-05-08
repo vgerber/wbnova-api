@@ -5,13 +5,15 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::profinet_description::ProfinetDescription;
 
 pub enum GetProfinetDescriptionResponseType {
-    BadRequest(Error),
-
     NotFound(Error),
 
     Ok(ProfinetDescription),
 
+    PreconditionFailed(Error),
+
     UndefinedResponse(reqwest::Response),
+
+    BadRequest(Error),
 }
 
 pub struct GetProfinetDescriptionPathParameters {
@@ -45,6 +47,11 @@ pub async fn get_profinet_description(
             Err(parsing_error) => Err(parsing_error),
         },
 
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetProfinetDescriptionResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         200 => match response.json::<ProfinetDescription>().await {
             Ok(profinet_description) => {
                 Ok(GetProfinetDescriptionResponseType::Ok(profinet_description))
@@ -52,8 +59,10 @@ pub async fn get_profinet_description(
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetProfinetDescriptionResponseType::BadRequest(error)),
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetProfinetDescriptionResponseType::PreconditionFailed(
+                error,
+            )),
             Err(parsing_error) => Err(parsing_error),
         },
 

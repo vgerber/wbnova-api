@@ -9,9 +9,9 @@ pub struct CoordinateSystemData {
 
     pub orientation_type: Option<String>,
 
-    pub reference_coordinate_system: Option<String>,
-
     pub position: Option<Vec<f64>>,
+
+    pub reference_coordinate_system: Option<String>,
 
     pub orientation: Option<Vec<f64>>,
 }

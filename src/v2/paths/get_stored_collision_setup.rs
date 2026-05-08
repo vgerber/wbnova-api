@@ -3,15 +3,15 @@ use ::reqwest;
 use crate::v2::objects::collision_setup::CollisionSetup;
 
 pub enum GetStoredCollisionSetupResponseType {
-    UndefinedResponse(reqwest::Response),
-
     Ok(CollisionSetup),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetStoredCollisionSetupPathParameters {
-    pub cell: String,
-
     pub setup: String,
+
+    pub cell: String,
 }
 
 pub struct GetStoredCollisionSetupQueryParameters {}

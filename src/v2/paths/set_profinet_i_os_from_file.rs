@@ -5,11 +5,13 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::profinet_input_output_config::ProfinetInputOutputConfig;
 
 pub enum SetProfinetIOsFromFileResponseType {
+    NotFound(Error),
+
     BadRequest(Error),
 
-    UndefinedResponse(reqwest::Response),
+    PreconditionFailed(Error),
 
-    NotFound(Error),
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct SetProfinetIOsFromFilePathParameters {
@@ -48,6 +50,13 @@ pub async fn set_profinet_i_os_from_file(
 
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(SetProfinetIOsFromFileResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetProfinetIOsFromFileResponseType::PreconditionFailed(
+                error,
+            )),
             Err(parsing_error) => Err(parsing_error),
         },
 

@@ -5,19 +5,19 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::robot_tcps::RobotTcps;
 
 pub enum ListVirtualControllerTcpsResponseType {
-    Ok(RobotTcps),
+    NotFound(Error),
 
-    BadRequest(Error),
+    Ok(RobotTcps),
 
     UndefinedResponse(reqwest::Response),
 
-    NotFound(Error),
+    BadRequest(Error),
 }
 
 pub struct ListVirtualControllerTcpsPathParameters {
-    pub motion_group: String,
-
     pub controller: String,
+
+    pub motion_group: String,
 
     pub cell: String,
 }

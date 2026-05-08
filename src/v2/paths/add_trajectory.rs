@@ -7,13 +7,13 @@ use crate::v2::objects::add_trajectory_response::AddTrajectoryResponse;
 use crate::v2::objects::add_trajectory_request::AddTrajectoryRequest;
 
 pub enum AddTrajectoryResponseType {
-    BadRequest(Error),
-
     NotFound(Error),
+
+    UndefinedResponse(reqwest::Response),
 
     Ok(AddTrajectoryResponse),
 
-    UndefinedResponse(reqwest::Response),
+    BadRequest(Error),
 }
 
 pub struct AddTrajectoryPathParameters {
@@ -47,13 +47,13 @@ pub async fn add_trajectory(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(AddTrajectoryResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddTrajectoryResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(AddTrajectoryResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddTrajectoryResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

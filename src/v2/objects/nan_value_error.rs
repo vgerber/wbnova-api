@@ -7,5 +7,7 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct NanValueError {
+    pub kind: String,
+
     pub nan_value: Option<Object>,
 }

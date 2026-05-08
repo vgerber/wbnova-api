@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -e
 curl -o public.openapi.yaml https://portal.wandelbots.io/docs/api/v2/ui/public.openapi.yaml
 opage -s public.openapi.yaml -o . -c config.json

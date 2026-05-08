@@ -7,9 +7,9 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct BusIoProfinetNetwork {
-    pub ip_config: Option<BusIoProfinetIpConfig>,
-
     pub device_name: Option<String>,
+
+    pub ip_config: Option<BusIoProfinetIpConfig>,
 
     pub rema_xml_content: Option<String>,
 }

@@ -5,6 +5,8 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::modbus_io_data::ModbusIoData;
 
 pub enum AddModbusIoResponseType {
+    PreconditionFailed(Error),
+
     BadRequest(Error),
 
     UndefinedResponse(reqwest::Response),
@@ -50,6 +52,11 @@ pub async fn add_modbus_io(
 
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(AddModbusIoResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddModbusIoResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

@@ -7,9 +7,11 @@ use crate::v2::objects::error::Error;
 pub enum GetOperationModeResponseType {
     BadRequest(Error),
 
+    Ok(OpMode),
+
     UndefinedResponse(reqwest::Response),
 
-    Ok(OpMode),
+    NotFound(Error),
 }
 
 pub struct GetOperationModePathParameters {
@@ -42,6 +44,11 @@ pub async fn get_operation_mode(
     match response.status().as_u16() {
         200 => match response.json::<OpMode>().await {
             Ok(op_mode) => Ok(GetOperationModeResponseType::Ok(op_mode)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetOperationModeResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

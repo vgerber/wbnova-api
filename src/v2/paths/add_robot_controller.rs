@@ -5,11 +5,11 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::robot_controller::RobotController;
 
 pub enum AddRobotControllerResponseType {
-    NotFound(Error),
+    UndefinedResponse(reqwest::Response),
 
     Forbidden(Error),
 
-    UndefinedResponse(reqwest::Response),
+    NotFound(Error),
 }
 
 pub struct AddRobotControllerPathParameters {
@@ -55,13 +55,13 @@ pub async fn add_robot_controller(
     };
 
     match response.status().as_u16() {
-        403 => match response.json::<Error>().await {
-            Ok(error) => Ok(AddRobotControllerResponseType::Forbidden(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddRobotControllerResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(AddRobotControllerResponseType::NotFound(error)),
+        403 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddRobotControllerResponseType::Forbidden(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

@@ -1,8 +1,8 @@
-use crate::v2::objects::initialize_movement_request::InitializeMovementRequest;
+use crate::v2::objects::start_movement_request::StartMovementRequest;
 
 use crate::v2::objects::playback_speed_request::PlaybackSpeedRequest;
 
-use crate::v2::objects::start_movement_request::StartMovementRequest;
+use crate::v2::objects::initialize_movement_request::InitializeMovementRequest;
 
 use crate::v2::objects::pause_movement_request::PauseMovementRequest;
 
@@ -13,11 +13,11 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub enum ExecuteTrajectoryRequest {
-    InitializeMovementRequestValue(InitializeMovementRequest),
+    StartMovementRequestValue(StartMovementRequest),
 
     PlaybackSpeedRequestValue(PlaybackSpeedRequest),
 
-    StartMovementRequestValue(StartMovementRequest),
+    InitializeMovementRequestValue(InitializeMovementRequest),
 
     PauseMovementRequestValue(PauseMovementRequest),
 }

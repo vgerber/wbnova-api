@@ -5,19 +5,19 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::coordinate_system_data::CoordinateSystemData;
 
 pub enum AddVirtualControllerCoordinateSystemResponseType {
+    BadRequest(Error),
+
     NotFound(Error),
 
     UndefinedResponse(reqwest::Response),
-
-    BadRequest(Error),
 }
 
 pub struct AddVirtualControllerCoordinateSystemPathParameters {
-    pub controller: String,
-
     pub coordinate_system: String,
 
     pub cell: String,
+
+    pub controller: String,
 }
 
 pub struct AddVirtualControllerCoordinateSystemQueryParameters {}
@@ -48,15 +48,15 @@ pub async fn add_virtual_controller_coordinate_system(
     };
 
     match response.status().as_u16() {
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddVirtualControllerCoordinateSystemResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(AddVirtualControllerCoordinateSystemResponseType::NotFound(
                 error,
             )),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(AddVirtualControllerCoordinateSystemResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

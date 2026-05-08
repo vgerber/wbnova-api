@@ -3,15 +3,15 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum DeleteRobotControllerResponseType {
-    UndefinedResponse(reqwest::Response),
-
     NotFound(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct DeleteRobotControllerPathParameters {
-    pub controller: String,
-
     pub cell: String,
+
+    pub controller: String,
 }
 
 pub struct DeleteRobotControllerQueryParameters {

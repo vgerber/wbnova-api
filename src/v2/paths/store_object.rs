@@ -9,9 +9,9 @@ pub enum StoreObjectResponseType {
 }
 
 pub struct StoreObjectPathParameters {
-    pub key: String,
-
     pub cell: String,
+
+    pub key: String,
 }
 
 pub struct StoreObjectQueryParameters {}

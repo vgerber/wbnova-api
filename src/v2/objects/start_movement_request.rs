@@ -1,8 +1,8 @@
+use crate::v2::objects::set_io::SetIo;
+
 use crate::v2::objects::pause_on_io::PauseOnIo;
 
 use crate::v2::objects::start_on_io::StartOnIo;
-
-use crate::v2::objects::set_io::SetIo;
 
 use serde::Serialize;
 
@@ -11,7 +11,7 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct StartMovementRequest {
-    pub direction: Option<String>,
+    pub set_outputs: Option<Vec<SetIo>>,
 
     pub pause_on_io: Option<PauseOnIo>,
 
@@ -21,5 +21,5 @@ pub struct StartMovementRequest {
 
     pub target_location: Option<f64>,
 
-    pub set_outputs: Option<Vec<SetIo>>,
+    pub direction: Option<String>,
 }

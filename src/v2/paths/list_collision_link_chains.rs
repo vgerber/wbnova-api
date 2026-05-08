@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::list_collision_link_chains_ok_json::ListCollisionLinkChainsOkJson;
 
 pub enum ListCollisionLinkChainsResponseType {
-    Ok(ListCollisionLinkChainsOkJson),
-
     UndefinedResponse(reqwest::Response),
+
+    Ok(ListCollisionLinkChainsOkJson),
 }
 
 pub struct ListCollisionLinkChainsPathParameters {

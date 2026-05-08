@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::license_status::LicenseStatus;
 
 pub enum GetLicenseStatusResponseType {
-    UndefinedResponse(reqwest::Response),
-
     Forbidden(LicenseStatus),
+
+    UndefinedResponse(reqwest::Response),
 
     Ok(LicenseStatus),
 }
@@ -29,13 +29,13 @@ pub async fn get_license_status(
     };
 
     match response.status().as_u16() {
-        200 => match response.json::<LicenseStatus>().await {
-            Ok(license_status) => Ok(GetLicenseStatusResponseType::Ok(license_status)),
+        403 => match response.json::<LicenseStatus>().await {
+            Ok(license_status) => Ok(GetLicenseStatusResponseType::Forbidden(license_status)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        403 => match response.json::<LicenseStatus>().await {
-            Ok(license_status) => Ok(GetLicenseStatusResponseType::Forbidden(license_status)),
+        200 => match response.json::<LicenseStatus>().await {
+            Ok(license_status) => Ok(GetLicenseStatusResponseType::Ok(license_status)),
             Err(parsing_error) => Err(parsing_error),
         },
 

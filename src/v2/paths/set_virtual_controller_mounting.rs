@@ -5,21 +5,21 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::coordinate_system::CoordinateSystem;
 
 pub enum SetVirtualControllerMountingResponseType {
-    BadRequest(Error),
+    NotFound(Error),
 
-    UndefinedResponse(reqwest::Response),
+    BadRequest(Error),
 
     Ok(CoordinateSystem),
 
-    NotFound(Error),
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct SetVirtualControllerMountingPathParameters {
     pub cell: String,
 
-    pub motion_group: String,
-
     pub controller: String,
+
+    pub motion_group: String,
 }
 
 pub struct SetVirtualControllerMountingQueryParameters {}
@@ -47,13 +47,13 @@ pub async fn set_virtual_controller_mounting(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(SetVirtualControllerMountingResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetVirtualControllerMountingResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(SetVirtualControllerMountingResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetVirtualControllerMountingResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

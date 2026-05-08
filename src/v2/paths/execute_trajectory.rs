@@ -1,19 +1,19 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::execute_trajectory_response::ExecuteTrajectoryResponse;
+
+use crate::v2::objects::error::Error;
 
 use crate::v2::objects::execute_trajectory_request::ExecuteTrajectoryRequest;
 
 pub enum ExecuteTrajectoryResponseType {
-    BadRequest(Error),
-
-    Ok(ExecuteTrajectoryResponse),
+    NotFound(Error),
 
     UndefinedResponse(reqwest::Response),
 
-    NotFound(Error),
+    BadRequest(Error),
+
+    Ok(ExecuteTrajectoryResponse),
 }
 
 pub struct ExecuteTrajectoryPathParameters {
@@ -47,6 +47,13 @@ pub async fn execute_trajectory(
     };
 
     match response.status().as_u16() {
+        200 => match response.json::<ExecuteTrajectoryResponse>().await {
+            Ok(execute_trajectory_response) => Ok(ExecuteTrajectoryResponseType::Ok(
+                execute_trajectory_response,
+            )),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(ExecuteTrajectoryResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
@@ -54,13 +61,6 @@ pub async fn execute_trajectory(
 
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(ExecuteTrajectoryResponseType::NotFound(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        200 => match response.json::<ExecuteTrajectoryResponse>().await {
-            Ok(execute_trajectory_response) => Ok(ExecuteTrajectoryResponseType::Ok(
-                execute_trajectory_response,
-            )),
             Err(parsing_error) => Err(parsing_error),
         },
 

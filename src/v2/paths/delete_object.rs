@@ -9,9 +9,9 @@ pub enum DeleteObjectResponseType {
 }
 
 pub struct DeleteObjectPathParameters {
-    pub cell: String,
-
     pub key: String,
+
+    pub cell: String,
 }
 
 pub struct DeleteObjectQueryParameters {}

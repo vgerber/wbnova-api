@@ -5,19 +5,19 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::get_trajectory_response::GetTrajectoryResponse;
 
 pub enum GetTrajectoryResponseType {
-    NotFound(Error),
+    UndefinedResponse(reqwest::Response),
 
     BadRequest(Error),
 
     Ok(GetTrajectoryResponse),
 
-    UndefinedResponse(reqwest::Response),
+    NotFound(Error),
 }
 
 pub struct GetTrajectoryPathParameters {
-    pub cell: String,
-
     pub controller: String,
+
+    pub cell: String,
 
     pub trajectory: String,
 }
@@ -49,15 +49,15 @@ pub async fn get_trajectory(
             Err(parsing_error) => Err(parsing_error),
         },
 
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetTrajectoryResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         200 => match response.json::<GetTrajectoryResponse>().await {
             Ok(get_trajectory_response) => {
                 Ok(GetTrajectoryResponseType::Ok(get_trajectory_response))
             }
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetTrajectoryResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

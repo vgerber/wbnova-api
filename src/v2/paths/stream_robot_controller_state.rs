@@ -25,9 +25,9 @@ pub struct StreamRobotControllerStatePathParameters {
 }
 
 pub struct StreamRobotControllerStateQueryParameters {
-    pub response_rate: Option<i32>,
-
     pub add_controller_timeout: Option<i32>,
+
+    pub response_rate: Option<i32>,
 }
 
 pub struct StreamRobotControllerStateStream {
@@ -85,15 +85,15 @@ pub async fn stream_robot_controller_state(
 
     // Optional Query Parameters
 
-    if let Some(ref query_parameter) = stream_robot_controller_state_query_parameters.response_rate
-    {
-        query_parameters.push(("response_rate", query_parameter.to_string()));
-    }
-
     if let Some(ref query_parameter) =
         stream_robot_controller_state_query_parameters.add_controller_timeout
     {
         query_parameters.push(("add_controller_timeout", query_parameter.to_string()));
+    }
+
+    if let Some(ref query_parameter) = stream_robot_controller_state_query_parameters.response_rate
+    {
+        query_parameters.push(("response_rate", query_parameter.to_string()));
     }
 
     // Query and Path Parameters Assembly

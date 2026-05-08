@@ -5,7 +5,7 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct Error {
-    pub code: Option<String>,
-
     pub message: String,
+
+    pub code: Option<String>,
 }

@@ -5,11 +5,13 @@ use crate::v2::objects::bus_io_type::BusIoType;
 use crate::v2::objects::error::Error;
 
 pub enum GetBusIoServiceResponseType {
-    NotFound(Error),
+    Ok(BusIoType),
 
     UndefinedResponse(reqwest::Response),
 
-    Ok(BusIoType),
+    PreconditionFailed(Error),
+
+    NotFound(Error),
 }
 
 pub struct GetBusIoServicePathParameters {
@@ -42,6 +44,11 @@ pub async fn get_bus_io_service(
 
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(GetBusIoServiceResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetBusIoServiceResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

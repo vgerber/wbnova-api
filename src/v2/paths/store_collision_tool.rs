@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::collision_motion_group_tool::CollisionMotionGroupTool;
 
 pub enum StoreCollisionToolResponseType {
-    UndefinedResponse(reqwest::Response),
-
     Ok(CollisionMotionGroupTool),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct StoreCollisionToolPathParameters {

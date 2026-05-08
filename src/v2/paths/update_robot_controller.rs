@@ -5,15 +5,15 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::robot_controller::RobotController;
 
 pub enum UpdateRobotControllerResponseType {
-    NotFound(Error),
-
     UndefinedResponse(reqwest::Response),
+
+    NotFound(Error),
 }
 
 pub struct UpdateRobotControllerPathParameters {
-    pub controller: String,
-
     pub cell: String,
+
+    pub controller: String,
 }
 
 pub struct UpdateRobotControllerQueryParameters {

@@ -5,17 +5,19 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::profinet_io_data::ProfinetIoData;
 
 pub enum AddProfinetIoResponseType {
+    PreconditionFailed(Error),
+
+    UndefinedResponse(reqwest::Response),
+
     BadRequest(Error),
 
     NotFound(Error),
-
-    UndefinedResponse(reqwest::Response),
 }
 
 pub struct AddProfinetIoPathParameters {
-    pub io: String,
-
     pub cell: String,
+
+    pub io: String,
 }
 
 pub struct AddProfinetIoQueryParameters {}
@@ -45,6 +47,11 @@ pub async fn add_profinet_io(
     match response.status().as_u16() {
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(AddProfinetIoResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(AddProfinetIoResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

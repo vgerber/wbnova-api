@@ -7,9 +7,9 @@ use crate::v2::objects::plan_collision_free_response::PlanCollisionFreeResponse;
 use crate::v2::objects::plan_collision_free_request::PlanCollisionFreeRequest;
 
 pub enum PlanCollisionFreeResponseType {
-    UndefinedResponse(reqwest::Response),
-
     UnprocessableEntity(Plan422Response),
+
+    UndefinedResponse(reqwest::Response),
 
     Ok(PlanCollisionFreeResponse),
 }

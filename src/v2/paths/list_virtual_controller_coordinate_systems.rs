@@ -5,11 +5,13 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::list_coordinate_systems_response::ListCoordinateSystemsResponse;
 
 pub enum ListVirtualControllerCoordinateSystemsResponseType {
+    NotFound(Error),
+
     Ok(ListCoordinateSystemsResponse),
 
-    UndefinedResponse(reqwest::Response),
-
     BadRequest(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct ListVirtualControllerCoordinateSystemsPathParameters {
@@ -40,8 +42,8 @@ pub async fn list_virtual_controller_coordinate_systems(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(ListVirtualControllerCoordinateSystemsResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListVirtualControllerCoordinateSystemsResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
@@ -51,6 +53,11 @@ pub async fn list_virtual_controller_coordinate_systems(
                     list_coordinate_systems_response,
                 ))
             }
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListVirtualControllerCoordinateSystemsResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

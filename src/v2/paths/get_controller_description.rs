@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::controller_description::ControllerDescription;
 
-pub enum GetControllerDescriptionResponseType {
-    BadRequest(Error),
+use crate::v2::objects::error::Error;
 
-    NotFound(Error),
+pub enum GetControllerDescriptionResponseType {
+    UndefinedResponse(reqwest::Response),
 
     Ok(ControllerDescription),
 
-    UndefinedResponse(reqwest::Response),
+    NotFound(Error),
+
+    BadRequest(Error),
 }
 
 pub struct GetControllerDescriptionPathParameters {
@@ -42,11 +42,6 @@ pub async fn get_controller_description(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetControllerDescriptionResponseType::BadRequest(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
         200 => match response.json::<ControllerDescription>().await {
             Ok(controller_description) => Ok(GetControllerDescriptionResponseType::Ok(
                 controller_description,
@@ -56,6 +51,11 @@ pub async fn get_controller_description(
 
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(GetControllerDescriptionResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetControllerDescriptionResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

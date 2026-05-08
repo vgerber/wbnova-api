@@ -5,17 +5,17 @@ use crate::v2::objects::error::Error;
 pub enum DeleteTrajectoryResponseType {
     BadRequest(Error),
 
-    UndefinedResponse(reqwest::Response),
-
     NotFound(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct DeleteTrajectoryPathParameters {
-    pub cell: String,
+    pub trajectory: String,
 
     pub controller: String,
 
-    pub trajectory: String,
+    pub cell: String,
 }
 
 pub struct DeleteTrajectoryQueryParameters {}
@@ -40,13 +40,13 @@ pub async fn delete_trajectory(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(DeleteTrajectoryResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteTrajectoryResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(DeleteTrajectoryResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteTrajectoryResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

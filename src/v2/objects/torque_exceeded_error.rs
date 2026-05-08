@@ -8,4 +8,6 @@ use serde::Deserialize;
 
 pub struct TorqueExceededError {
     pub torque_exceeded: Option<Object>,
+
+    pub kind: String,
 }

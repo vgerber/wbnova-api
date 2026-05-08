@@ -6,12 +6,14 @@ pub enum SetVirtualControllerBehaviorResponseType {
     BadRequest(Error),
 
     UndefinedResponse(reqwest::Response),
+
+    NotFound(Error),
 }
 
 pub struct SetVirtualControllerBehaviorPathParameters {
-    pub cell: String,
-
     pub controller: String,
+
+    pub cell: String,
 }
 
 pub struct SetVirtualControllerBehaviorQueryParameters {
@@ -50,6 +52,11 @@ pub async fn set_virtual_controller_behavior(
     };
 
     match response.status().as_u16() {
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetVirtualControllerBehaviorResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(SetVirtualControllerBehaviorResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),

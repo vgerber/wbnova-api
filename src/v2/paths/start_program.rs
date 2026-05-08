@@ -7,9 +7,9 @@ use crate::v2::objects::program_run::ProgramRun;
 use crate::v2::objects::program_start_request::ProgramStartRequest;
 
 pub enum StartProgramResponseType {
-    UndefinedResponse(reqwest::Response),
-
     UnprocessableEntity(HttpValidationError),
+
+    UndefinedResponse(reqwest::Response),
 
     Ok(ProgramRun),
 }

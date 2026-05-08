@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum SetDefaultModeResponseType {
-    BadRequest(Error),
-
     NotFound(Error),
+
+    BadRequest(Error),
 
     UndefinedResponse(reqwest::Response),
 }
@@ -47,13 +47,13 @@ pub async fn set_default_mode(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(SetDefaultModeResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetDefaultModeResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(SetDefaultModeResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetDefaultModeResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

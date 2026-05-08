@@ -5,13 +5,13 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::io_value::IoValue;
 
 pub enum SetOutputValuesResponseType {
-    NotFound(Error),
+    UndefinedResponse(reqwest::Response),
 
-    BadRequest(Error),
+    NotFound(Error),
 
     TooManyRequests(Error),
 
-    UndefinedResponse(reqwest::Response),
+    BadRequest(Error),
 }
 
 pub struct SetOutputValuesPathParameters {
@@ -45,11 +45,6 @@ pub async fn set_output_values(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(SetOutputValuesResponseType::NotFound(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(SetOutputValuesResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
@@ -57,6 +52,11 @@ pub async fn set_output_values(
 
         429 => match response.json::<Error>().await {
             Ok(error) => Ok(SetOutputValuesResponseType::TooManyRequests(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetOutputValuesResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

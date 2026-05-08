@@ -5,21 +5,21 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::motion_group_joints::MotionGroupJoints;
 
 pub enum GetMotionGroupStateResponseType {
-    UndefinedResponse(reqwest::Response),
-
     BadRequest(Error),
 
     Ok(MotionGroupJoints),
+
+    UndefinedResponse(reqwest::Response),
 
     NotFound(Error),
 }
 
 pub struct GetMotionGroupStatePathParameters {
-    pub motion_group: String,
-
     pub cell: String,
 
     pub controller: String,
+
+    pub motion_group: String,
 }
 
 pub struct GetMotionGroupStateQueryParameters {}
@@ -44,8 +44,8 @@ pub async fn get_motion_group_state(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetMotionGroupStateResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetMotionGroupStateResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
@@ -54,8 +54,8 @@ pub async fn get_motion_group_state(
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetMotionGroupStateResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetMotionGroupStateResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

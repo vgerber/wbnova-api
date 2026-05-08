@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::link_chain::LinkChain;
 
 pub enum GetMotionGroupCollisionModelResponseType {
-    UndefinedResponse(reqwest::Response),
-
     Ok(LinkChain),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetMotionGroupCollisionModelPathParameters {

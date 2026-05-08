@@ -7,9 +7,9 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct InitializeMovementResponse {
-    pub kind: String,
+    pub add_trajectory_error: Option<AddTrajectoryError>,
 
     pub message: Option<String>,
 
-    pub add_trajectory_error: Option<AddTrajectoryError>,
+    pub kind: String,
 }

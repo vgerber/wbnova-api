@@ -5,15 +5,17 @@ use crate::v2::objects::error::Error;
 pub enum DeleteProfinetIoResponseType {
     NotFound(Error),
 
-    UndefinedResponse(reqwest::Response),
+    PreconditionFailed(Error),
 
     BadRequest(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct DeleteProfinetIoPathParameters {
-    pub cell: String,
-
     pub io: String,
+
+    pub cell: String,
 }
 
 pub struct DeleteProfinetIoQueryParameters {}
@@ -40,6 +42,11 @@ pub async fn delete_profinet_io(
     match response.status().as_u16() {
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(DeleteProfinetIoResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteProfinetIoResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

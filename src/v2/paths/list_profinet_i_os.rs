@@ -1,15 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::profinet_i_os::ProfinetIOs;
-
 use crate::v2::objects::error::Error;
+
+use crate::v2::objects::profinet_i_os::ProfinetIOs;
 
 pub enum ListProfinetIOsResponseType {
     NotFound(Error),
 
-    UndefinedResponse(reqwest::Response),
+    PreconditionFailed(Error),
 
     Ok(ProfinetIOs),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct ListProfinetIOsPathParameters {
@@ -38,6 +40,11 @@ pub async fn list_profinet_i_os(
     };
 
     match response.status().as_u16() {
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListProfinetIOsResponseType::PreconditionFailed(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         200 => match response.json::<ProfinetIOs>().await {
             Ok(profinet_i_os) => Ok(ListProfinetIOsResponseType::Ok(profinet_i_os)),
             Err(parsing_error) => Err(parsing_error),

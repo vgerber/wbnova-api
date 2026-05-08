@@ -7,7 +7,7 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct TcpOffset {
-    pub pose: Pose,
-
     pub name: String,
+
+    pub pose: Pose,
 }

@@ -9,7 +9,7 @@ use serde::Deserialize;
 pub struct SetIo {
     pub io: IoValue,
 
-    pub io_origin: String,
-
     pub location: f64,
+
+    pub io_origin: String,
 }

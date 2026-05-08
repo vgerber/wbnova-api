@@ -5,14 +5,14 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct ModbusIoData {
-    pub address: i32,
-
-    pub byte_order: String,
+    pub description: String,
 
     #[serde(alias = "type")]
     pub type_name: String,
 
-    pub description: String,
+    pub byte_order: String,
 
     pub area: String,
+
+    pub address: i32,
 }

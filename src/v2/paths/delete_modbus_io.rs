@@ -3,17 +3,19 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum DeleteModbusIoResponseType {
+    PreconditionFailed(Error),
+
     BadRequest(Error),
 
-    UndefinedResponse(reqwest::Response),
-
     NotFound(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct DeleteModbusIoPathParameters {
-    pub cell: String,
-
     pub io: String,
+
+    pub cell: String,
 }
 
 pub struct DeleteModbusIoQueryParameters {}
@@ -40,6 +42,11 @@ pub async fn delete_modbus_io(
     match response.status().as_u16() {
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(DeleteModbusIoResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteModbusIoResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

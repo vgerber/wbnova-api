@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::license::License;
-
 use crate::v2::objects::error::Error;
+
+use crate::v2::objects::license::License;
 
 use crate::v2::objects::activate_license_request::ActivateLicenseRequest;
 
 pub enum ActivateLicenseResponseType {
     Forbidden(Error),
 
-    NotFound(Error),
-
     Ok(License),
+
+    NotFound(Error),
 
     UndefinedResponse(reqwest::Response),
 }
@@ -38,8 +38,8 @@ pub async fn activate_license(
     };
 
     match response.status().as_u16() {
-        200 => match response.json::<License>().await {
-            Ok(license) => Ok(ActivateLicenseResponseType::Ok(license)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(ActivateLicenseResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
@@ -48,8 +48,8 @@ pub async fn activate_license(
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(ActivateLicenseResponseType::NotFound(error)),
+        200 => match response.json::<License>().await {
+            Ok(license) => Ok(ActivateLicenseResponseType::Ok(license)),
             Err(parsing_error) => Err(parsing_error),
         },
 

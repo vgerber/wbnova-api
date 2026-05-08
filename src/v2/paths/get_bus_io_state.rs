@@ -5,6 +5,8 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::bus_i_os_state::BusIOsState;
 
 pub enum GetBusIoStateResponseType {
+    PreconditionFailed(Error),
+
     Ok(BusIOsState),
 
     NotFound(Error),
@@ -38,13 +40,18 @@ pub async fn get_bus_io_state(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetBusIoStateResponseType::NotFound(error)),
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetBusIoStateResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
         200 => match response.json::<BusIOsState>().await {
             Ok(bus_i_os_state) => Ok(GetBusIoStateResponseType::Ok(bus_i_os_state)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetBusIoStateResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

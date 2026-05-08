@@ -1,13 +1,13 @@
 use ::reqwest;
 
-use crate::v2::objects::license::License;
-
 use crate::v2::objects::error::Error;
 
-pub enum GetLicenseResponseType {
-    Ok(License),
+use crate::v2::objects::license::License;
 
+pub enum GetLicenseResponseType {
     NotFound(Error),
+
+    Ok(License),
 
     UndefinedResponse(reqwest::Response),
 }
@@ -27,13 +27,13 @@ pub async fn get_license(
     };
 
     match response.status().as_u16() {
-        200 => match response.json::<License>().await {
-            Ok(license) => Ok(GetLicenseResponseType::Ok(license)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetLicenseResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetLicenseResponseType::NotFound(error)),
+        200 => match response.json::<License>().await {
+            Ok(license) => Ok(GetLicenseResponseType::Ok(license)),
             Err(parsing_error) => Err(parsing_error),
         },
 

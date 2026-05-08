@@ -3,21 +3,21 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum DeleteVirtualControllerTcpResponseType {
-    BadRequest(Error),
-
     NotFound(Error),
 
     UndefinedResponse(reqwest::Response),
+
+    BadRequest(Error),
 }
 
 pub struct DeleteVirtualControllerTcpPathParameters {
-    pub motion_group: String,
-
     pub tcp: String,
+
+    pub controller: String,
 
     pub cell: String,
 
-    pub controller: String,
+    pub motion_group: String,
 }
 
 pub struct DeleteVirtualControllerTcpQueryParameters {}
@@ -46,13 +46,13 @@ pub async fn delete_virtual_controller_tcp(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(DeleteVirtualControllerTcpResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteVirtualControllerTcpResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(DeleteVirtualControllerTcpResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(DeleteVirtualControllerTcpResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

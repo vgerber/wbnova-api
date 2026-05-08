@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum DeleteCellResponseType {
-    NotFound(Error),
-
     UndefinedResponse(reqwest::Response),
+
+    NotFound(Error),
 }
 
 pub struct DeleteCellPathParameters {

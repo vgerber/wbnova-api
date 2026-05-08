@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::list_io_descriptions_response::ListIoDescriptionsResponse;
 
+use crate::v2::objects::error::Error;
+
 pub enum ListVirtualControllerIoDescriptionsResponseType {
+    UndefinedResponse(reqwest::Response),
+
     Ok(ListIoDescriptionsResponse),
 
     NotFound(Error),
 
     BadRequest(Error),
-
-    UndefinedResponse(reqwest::Response),
 }
 
 pub struct ListVirtualControllerIoDescriptionsPathParameters {
@@ -21,13 +21,13 @@ pub struct ListVirtualControllerIoDescriptionsPathParameters {
 }
 
 pub struct ListVirtualControllerIoDescriptionsQueryParameters {
-    pub ios: Option<Vec<String>>,
-
     pub value_type: Option<String>,
 
     pub group: Option<String>,
 
     pub direction: Option<String>,
+
+    pub ios: Option<Vec<String>>,
 }
 
 pub async fn list_virtual_controller_io_descriptions(
@@ -44,12 +44,6 @@ pub async fn list_virtual_controller_io_descriptions(
 
     // Optional Query Parameters
 
-    if let Some(ref query_parameter) = query_parameters.ios {
-        query_parameter.iter().for_each(|query_parameter_item| {
-            reqwest_query_parameters.push(("ios", query_parameter_item.to_string()))
-        });
-    }
-
     if let Some(ref query_parameter) = query_parameters.value_type {
         reqwest_query_parameters.push(("value_type", query_parameter.to_string()));
     }
@@ -60,6 +54,12 @@ pub async fn list_virtual_controller_io_descriptions(
 
     if let Some(ref query_parameter) = query_parameters.direction {
         reqwest_query_parameters.push(("direction", query_parameter.to_string()));
+    }
+
+    if let Some(ref query_parameter) = query_parameters.ios {
+        query_parameter.iter().for_each(|query_parameter_item| {
+            reqwest_query_parameters.push(("ios", query_parameter_item.to_string()))
+        });
     }
 
     let response = match client
@@ -76,6 +76,13 @@ pub async fn list_virtual_controller_io_descriptions(
     };
 
     match response.status().as_u16() {
+        200 => match response.json::<ListIoDescriptionsResponse>().await {
+            Ok(list_io_descriptions_response) => Ok(
+                ListVirtualControllerIoDescriptionsResponseType::Ok(list_io_descriptions_response),
+            ),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(ListVirtualControllerIoDescriptionsResponseType::BadRequest(
                 error,
@@ -87,13 +94,6 @@ pub async fn list_virtual_controller_io_descriptions(
             Ok(error) => Ok(ListVirtualControllerIoDescriptionsResponseType::NotFound(
                 error,
             )),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        200 => match response.json::<ListIoDescriptionsResponse>().await {
-            Ok(list_io_descriptions_response) => Ok(
-                ListVirtualControllerIoDescriptionsResponseType::Ok(list_io_descriptions_response),
-            ),
             Err(parsing_error) => Err(parsing_error),
         },
 

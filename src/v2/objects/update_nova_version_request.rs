@@ -6,4 +6,6 @@ use serde::Deserialize;
 
 pub struct UpdateNovaVersionRequest {
     pub channel: String,
+
+    pub update_cells: Option<bool>,
 }

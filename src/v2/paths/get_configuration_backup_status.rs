@@ -1,15 +1,15 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::configuration_archive_status::ConfigurationArchiveStatus;
 
+use crate::v2::objects::error::Error;
+
 pub enum GetConfigurationBackupStatusResponseType {
-    UndefinedResponse(reqwest::Response),
+    Ok(ConfigurationArchiveStatus),
 
     NotFound(Error),
 
-    Ok(ConfigurationArchiveStatus),
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetConfigurationBackupStatusPathParameters {}
@@ -40,15 +40,15 @@ pub async fn get_configuration_backup_status(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetConfigurationBackupStatusResponseType::NotFound(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
         200 => match response.json::<ConfigurationArchiveStatus>().await {
             Ok(configuration_archive_status) => Ok(GetConfigurationBackupStatusResponseType::Ok(
                 configuration_archive_status,
             )),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetConfigurationBackupStatusResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

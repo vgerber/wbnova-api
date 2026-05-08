@@ -6,6 +6,8 @@ pub enum ClearBusIoServiceResponseType {
     UndefinedResponse(reqwest::Response),
 
     NotFound(Error),
+
+    PreconditionFailed(Error),
 }
 
 pub struct ClearBusIoServicePathParameters {
@@ -47,6 +49,11 @@ pub async fn clear_bus_io_service(
     match response.status().as_u16() {
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(ClearBusIoServiceResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(ClearBusIoServiceResponseType::PreconditionFailed(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

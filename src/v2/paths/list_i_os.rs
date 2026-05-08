@@ -5,13 +5,13 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::list_io_values_response::ListIoValuesResponse;
 
 pub enum ListIOsResponseType {
-    NotFound(Error),
-
-    Ok(ListIoValuesResponse),
-
     BadRequest(Error),
 
     UndefinedResponse(reqwest::Response),
+
+    NotFound(Error),
+
+    Ok(ListIoValuesResponse),
 }
 
 pub struct ListIOsPathParameters {
@@ -59,6 +59,11 @@ pub async fn list_i_os(
     };
 
     match response.status().as_u16() {
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(ListIOsResponseType::NotFound(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(ListIOsResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
@@ -66,11 +71,6 @@ pub async fn list_i_os(
 
         200 => match response.json::<ListIoValuesResponse>().await {
             Ok(list_io_values_response) => Ok(ListIOsResponseType::Ok(list_io_values_response)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(ListIOsResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

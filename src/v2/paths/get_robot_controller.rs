@@ -1,15 +1,15 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::robot_controller::RobotController;
 
+use crate::v2::objects::error::Error;
+
 pub enum GetRobotControllerResponseType {
+    Ok(RobotController),
+
     UndefinedResponse(reqwest::Response),
 
     NotFound(Error),
-
-    Ok(RobotController),
 }
 
 pub struct GetRobotControllerPathParameters {
@@ -40,13 +40,13 @@ pub async fn get_robot_controller(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetRobotControllerResponseType::NotFound(error)),
+        200 => match response.json::<RobotController>().await {
+            Ok(robot_controller) => Ok(GetRobotControllerResponseType::Ok(robot_controller)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        200 => match response.json::<RobotController>().await {
-            Ok(robot_controller) => Ok(GetRobotControllerResponseType::Ok(robot_controller)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetRobotControllerResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

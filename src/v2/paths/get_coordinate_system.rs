@@ -5,19 +5,19 @@ use crate::v2::objects::coordinate_system::CoordinateSystem;
 use crate::v2::objects::error::Error;
 
 pub enum GetCoordinateSystemResponseType {
-    NotFound(Error),
-
-    BadRequest(Error),
+    Ok(CoordinateSystem),
 
     UndefinedResponse(reqwest::Response),
 
-    Ok(CoordinateSystem),
+    NotFound(Error),
+
+    BadRequest(Error),
 }
 
 pub struct GetCoordinateSystemPathParameters {
-    pub cell: String,
-
     pub coordinate_system: String,
+
+    pub cell: String,
 
     pub controller: String,
 }

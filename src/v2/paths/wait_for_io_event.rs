@@ -7,9 +7,9 @@ use crate::v2::objects::wait_for_io_event_request::WaitForIoEventRequest;
 pub enum WaitForIoEventResponseType {
     NotFound(Error),
 
-    Ok(bool),
-
     BadRequest(Error),
+
+    Ok(bool),
 
     UndefinedResponse(reqwest::Response),
 }
@@ -50,13 +50,13 @@ pub async fn wait_for_io_event(
             Err(parsing_error) => Err(parsing_error),
         },
 
-        200 => match response.json::<bool>().await {
-            Ok(bool) => Ok(WaitForIoEventResponseType::Ok(bool)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(WaitForIoEventResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(WaitForIoEventResponseType::BadRequest(error)),
+        200 => match response.json::<bool>().await {
+            Ok(bool) => Ok(WaitForIoEventResponseType::Ok(bool)),
             Err(parsing_error) => Err(parsing_error),
         },
 

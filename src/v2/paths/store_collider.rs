@@ -3,9 +3,9 @@ use ::reqwest;
 use crate::v2::objects::collider::Collider;
 
 pub enum StoreColliderResponseType {
-    Ok(Collider),
-
     UndefinedResponse(reqwest::Response),
+
+    Ok(Collider),
 }
 
 pub struct StoreColliderPathParameters {

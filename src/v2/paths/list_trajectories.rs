@@ -7,9 +7,9 @@ use crate::v2::objects::list_trajectories_response::ListTrajectoriesResponse;
 pub enum ListTrajectoriesResponseType {
     Ok(ListTrajectoriesResponse),
 
-    BadRequest(Error),
-
     UndefinedResponse(reqwest::Response),
+
+    BadRequest(Error),
 }
 
 pub struct ListTrajectoriesPathParameters {

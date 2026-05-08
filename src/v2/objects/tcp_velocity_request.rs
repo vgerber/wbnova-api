@@ -9,7 +9,7 @@ pub struct TcpVelocityRequest {
 
     pub use_tool_coordinate_system: Option<bool>,
 
-    pub message_type: String,
-
     pub translation: Vec<f64>,
+
+    pub message_type: String,
 }

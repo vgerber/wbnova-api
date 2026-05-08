@@ -1,21 +1,23 @@
 use ::reqwest;
 
-use crate::v2::objects::flag::Flag;
-
 use crate::v2::objects::error::Error;
 
+use crate::v2::objects::flag::Flag;
+
 pub enum GetEmergencyStopResponseType {
+    NotFound(Error),
+
     Ok(Flag),
 
-    BadRequest(Error),
-
     UndefinedResponse(reqwest::Response),
+
+    BadRequest(Error),
 }
 
 pub struct GetEmergencyStopPathParameters {
-    pub cell: String,
-
     pub controller: String,
+
+    pub cell: String,
 }
 
 pub struct GetEmergencyStopQueryParameters {}
@@ -40,13 +42,18 @@ pub async fn get_emergency_stop(
     };
 
     match response.status().as_u16() {
-        200 => match response.json::<Flag>().await {
-            Ok(flag) => Ok(GetEmergencyStopResponseType::Ok(flag)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetEmergencyStopResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(GetEmergencyStopResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        200 => match response.json::<Flag>().await {
+            Ok(flag) => Ok(GetEmergencyStopResponseType::Ok(flag)),
             Err(parsing_error) => Err(parsing_error),
         },
 

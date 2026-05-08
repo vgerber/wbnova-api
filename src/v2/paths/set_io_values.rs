@@ -7,17 +7,17 @@ use crate::v2::objects::io_value::IoValue;
 pub enum SetIoValuesResponseType {
     NotImplemented(Error),
 
-    BadRequest(Error),
-
     NotFound(Error),
+
+    BadRequest(Error),
 
     UndefinedResponse(reqwest::Response),
 }
 
 pub struct SetIoValuesPathParameters {
-    pub cell: String,
-
     pub controller: String,
+
+    pub cell: String,
 }
 
 pub struct SetIoValuesQueryParameters {}
@@ -45,6 +45,11 @@ pub async fn set_io_values(
     };
 
     match response.status().as_u16() {
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetIoValuesResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
         501 => match response.json::<Error>().await {
             Ok(error) => Ok(SetIoValuesResponseType::NotImplemented(error)),
             Err(parsing_error) => Err(parsing_error),
@@ -52,11 +57,6 @@ pub async fn set_io_values(
 
         404 => match response.json::<Error>().await {
             Ok(error) => Ok(SetIoValuesResponseType::NotFound(error)),
-            Err(parsing_error) => Err(parsing_error),
-        },
-
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(SetIoValuesResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

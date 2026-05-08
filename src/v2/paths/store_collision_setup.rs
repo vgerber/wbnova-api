@@ -9,9 +9,9 @@ pub enum StoreCollisionSetupResponseType {
 }
 
 pub struct StoreCollisionSetupPathParameters {
-    pub setup: String,
-
     pub cell: String,
+
+    pub setup: String,
 }
 
 pub struct StoreCollisionSetupQueryParameters {}

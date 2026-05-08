@@ -13,13 +13,13 @@ pub enum AddVirtualControllerTcpResponseType {
 }
 
 pub struct AddVirtualControllerTcpPathParameters {
-    pub cell: String,
-
     pub controller: String,
 
-    pub motion_group: String,
+    pub cell: String,
 
     pub tcp: String,
+
+    pub motion_group: String,
 }
 
 pub struct AddVirtualControllerTcpQueryParameters {}

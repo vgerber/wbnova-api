@@ -13,9 +13,9 @@ use serde::Deserialize;
 pub struct CollisionSetup {
     pub colliders: Option<ColliderDictionary>,
 
-    pub self_collision_detection: Option<bool>,
-
     pub tool: Option<CollisionMotionGroupTool>,
 
     pub link_chain: Option<Vec<CollisionMotionGroupLink>>,
+
+    pub self_collision_detection: Option<bool>,
 }

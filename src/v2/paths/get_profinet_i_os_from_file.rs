@@ -3,13 +3,15 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum GetProfinetIOsFromFileResponseType {
-    NotFound(Error),
-
     UndefinedResponse(reqwest::Response),
 
-    BadRequest(Error),
+    NotFound(Error),
 
     Ok(String),
+
+    PreconditionFailed(Error),
+
+    BadRequest(Error),
 }
 
 pub struct GetProfinetIOsFromFilePathParameters {
@@ -58,8 +60,8 @@ pub async fn get_profinet_i_os_from_file(
     };
 
     match response.status().as_u16() {
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetProfinetIOsFromFileResponseType::BadRequest(error)),
+        200 => match response.json::<String>().await {
+            Ok(string) => Ok(GetProfinetIOsFromFileResponseType::Ok(string)),
             Err(parsing_error) => Err(parsing_error),
         },
 
@@ -68,8 +70,15 @@ pub async fn get_profinet_i_os_from_file(
             Err(parsing_error) => Err(parsing_error),
         },
 
-        200 => match response.json::<String>().await {
-            Ok(string) => Ok(GetProfinetIOsFromFileResponseType::Ok(string)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetProfinetIOsFromFileResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        412 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetProfinetIOsFromFileResponseType::PreconditionFailed(
+                error,
+            )),
             Err(parsing_error) => Err(parsing_error),
         },
 

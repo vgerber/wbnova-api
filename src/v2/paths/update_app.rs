@@ -7,15 +7,15 @@ use crate::v2::objects::app::App;
 pub enum UpdateAppResponseType {
     NotFound(Error),
 
-    BadRequest(Error),
-
     UndefinedResponse(reqwest::Response),
+
+    BadRequest(Error),
 }
 
 pub struct UpdateAppPathParameters {
-    pub app: String,
-
     pub cell: String,
+
+    pub app: String,
 }
 
 pub struct UpdateAppQueryParameters {
@@ -57,13 +57,13 @@ pub async fn update_app(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(UpdateAppResponseType::NotFound(error)),
+        400 => match response.json::<Error>().await {
+            Ok(error) => Ok(UpdateAppResponseType::BadRequest(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 
-        400 => match response.json::<Error>().await {
-            Ok(error) => Ok(UpdateAppResponseType::BadRequest(error)),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(UpdateAppResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

@@ -6,6 +6,8 @@ pub enum SetOperationModeResponseType {
     BadRequest(Error),
 
     UndefinedResponse(reqwest::Response),
+
+    NotFound(Error),
 }
 
 pub struct SetOperationModePathParameters {
@@ -47,6 +49,11 @@ pub async fn set_operation_mode(
     match response.status().as_u16() {
         400 => match response.json::<Error>().await {
             Ok(error) => Ok(SetOperationModeResponseType::BadRequest(error)),
+            Err(parsing_error) => Err(parsing_error),
+        },
+
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(SetOperationModeResponseType::NotFound(error)),
             Err(parsing_error) => Err(parsing_error),
         },
 

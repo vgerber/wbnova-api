@@ -7,11 +7,11 @@ use crate::v2::objects::cell::Cell;
 pub enum UpdateCellResponseType {
     Forbidden(Error),
 
-    BadRequest(Error),
+    UndefinedResponse(reqwest::Response),
 
     NotFound(Error),
 
-    UndefinedResponse(reqwest::Response),
+    BadRequest(Error),
 }
 
 pub struct UpdateCellPathParameters {

@@ -1,17 +1,17 @@
 use ::reqwest;
 
-use crate::v2::objects::error::Error;
-
 use crate::v2::objects::virtual_robot_configuration::VirtualRobotConfiguration;
 
-pub enum GetVirtualControllerConfigurationResponseType {
-    UndefinedResponse(reqwest::Response),
+use crate::v2::objects::error::Error;
 
+pub enum GetVirtualControllerConfigurationResponseType {
     Ok(VirtualRobotConfiguration),
+
+    BadRequest(Error),
 
     NotFound(Error),
 
-    BadRequest(Error),
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetVirtualControllerConfigurationPathParameters {
@@ -42,10 +42,10 @@ pub async fn get_virtual_controller_configuration(
     };
 
     match response.status().as_u16() {
-        404 => match response.json::<Error>().await {
-            Ok(error) => Ok(GetVirtualControllerConfigurationResponseType::NotFound(
-                error,
-            )),
+        200 => match response.json::<VirtualRobotConfiguration>().await {
+            Ok(virtual_robot_configuration) => Ok(
+                GetVirtualControllerConfigurationResponseType::Ok(virtual_robot_configuration),
+            ),
             Err(parsing_error) => Err(parsing_error),
         },
 
@@ -56,10 +56,10 @@ pub async fn get_virtual_controller_configuration(
             Err(parsing_error) => Err(parsing_error),
         },
 
-        200 => match response.json::<VirtualRobotConfiguration>().await {
-            Ok(virtual_robot_configuration) => Ok(
-                GetVirtualControllerConfigurationResponseType::Ok(virtual_robot_configuration),
-            ),
+        404 => match response.json::<Error>().await {
+            Ok(error) => Ok(GetVirtualControllerConfigurationResponseType::NotFound(
+                error,
+            )),
             Err(parsing_error) => Err(parsing_error),
         },
 

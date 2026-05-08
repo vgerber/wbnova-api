@@ -7,13 +7,13 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct KukaController {
-    pub controller_port: i32,
-
-    pub slow_cycle_rate: Option<bool>,
-
-    pub controller_ip: String,
-
     pub rsi_server: Object,
 
     pub kind: String,
+
+    pub slow_cycle_rate: Option<bool>,
+
+    pub controller_port: i32,
+
+    pub controller_ip: String,
 }

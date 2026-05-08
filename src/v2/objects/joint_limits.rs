@@ -9,9 +9,11 @@ use serde::Deserialize;
 pub struct JointLimits {
     pub acceleration: Option<f64>,
 
+    pub torque: Option<f64>,
+
+    pub jerk: Option<f64>,
+
     pub position: Option<LimitRange>,
 
     pub velocity: Option<f64>,
-
-    pub torque: Option<f64>,
 }

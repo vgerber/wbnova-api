@@ -9,9 +9,9 @@ pub enum DeleteAppResponseType {
 }
 
 pub struct DeleteAppPathParameters {
-    pub app: String,
-
     pub cell: String,
+
+    pub app: String,
 }
 
 pub struct DeleteAppQueryParameters {

@@ -3,15 +3,15 @@ use ::reqwest;
 use crate::v2::objects::error::Error;
 
 pub enum GetObjectResponseType {
-    UndefinedResponse(reqwest::Response),
-
     NotFound(Error),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetObjectPathParameters {
-    pub cell: String,
-
     pub key: String,
+
+    pub cell: String,
 }
 
 pub struct GetObjectQueryParameters {}

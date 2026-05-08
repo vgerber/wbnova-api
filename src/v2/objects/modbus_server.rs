@@ -7,17 +7,17 @@ use serde::Deserialize;
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub struct ModbusServer {
-    pub bus_type: String,
-
     pub input_registers_size: i32,
-
-    pub coils_size: i32,
 
     pub network: BusIoModbusTcpServer,
 
     pub discrete_inputs_size: i32,
 
-    pub holding_registers_size: i32,
-
     pub connections: i32,
+
+    pub bus_type: String,
+
+    pub coils_size: i32,
+
+    pub holding_registers_size: i32,
 }

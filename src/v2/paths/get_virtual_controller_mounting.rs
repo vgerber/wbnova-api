@@ -5,21 +5,21 @@ use crate::v2::objects::error::Error;
 use crate::v2::objects::coordinate_system::CoordinateSystem;
 
 pub enum GetVirtualControllerMountingResponseType {
+    UndefinedResponse(reqwest::Response),
+
     NotFound(Error),
 
     Ok(CoordinateSystem),
 
     BadRequest(Error),
-
-    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetVirtualControllerMountingPathParameters {
     pub motion_group: String,
 
-    pub controller: String,
-
     pub cell: String,
+
+    pub controller: String,
 }
 
 pub struct GetVirtualControllerMountingQueryParameters {}

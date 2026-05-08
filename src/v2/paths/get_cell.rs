@@ -7,9 +7,9 @@ use crate::v2::objects::error::Error;
 pub enum GetCellResponseType {
     NotFound(Error),
 
-    UndefinedResponse(reqwest::Response),
-
     Ok(Cell),
+
+    UndefinedResponse(reqwest::Response),
 }
 
 pub struct GetCellPathParameters {
